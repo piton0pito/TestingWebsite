@@ -1,7 +1,9 @@
 import json
 
-from sqlmodel import SQLModel, Field
-from typing import Optional
+from pydantic import BaseModel
+from sqlalchemy import Column
+from sqlmodel import SQLModel, Field, JSON
+from typing import Optional, List
 from datetime import datetime
 from hashlib import sha256
 from cryptography.fernet import Fernet
@@ -15,7 +17,7 @@ class User(SQLModel, table=True):
     email: str  # почта
     phone: str
     name: str  # имя
-    date_reg: datetime = Field(default_factory=datetime.utcnow)  # дата регистрации
+    date_reg: datetime = Field(default=datetime.utcnow())  # дата регистрации
     temp_data: str = Field(nullable=True)
 
     def verify_password(self, password: str):
@@ -31,6 +33,23 @@ class User(SQLModel, table=True):
         self.role = 'user'
 
 
+class CompletedCourses(SQLModel, table=True):
+    id: Optional[int] = Field(primary_key=True, default=None)
+    user_id: int = Field(foreign_key='user.id')
+    course_id: int = Field(foreign_key='course.id')
+    title: str
+    topic: str
+    data_completion_course: datetime = Field(default=datetime.utcnow())
+
+
+class FavouritesCourse(SQLModel, table=True):
+    id: Optional[int] = Field(primary_key=True, default=None)
+    user_id: int = Field(foreign_key='user.id')
+    course_id: int = Field(foreign_key='course.id')
+    title: str
+    topic: str
+
+
 class Avatar(SQLModel, table=True):
     id: Optional[int] = Field(primary_key=True, default=None)
     user_id: int = Field(foreign_key='user.id')
@@ -42,12 +61,13 @@ class Avatar(SQLModel, table=True):
 
 class Course(SQLModel, table=True):
     id: Optional[int] = Field(primary_key=True, default=None)
-    title: str
-    data: json  # {"data": "данные"}
-    date_create: datetime = Field(default_factory=datetime.utcnow)
-    date_last_update: datetime = Field(default_factory=datetime.utcnow)
+    title: str = Field(default='title')
+    topic: str = Field(default='topic')
+    data: str = Field(default='data')
+    date_create: datetime = Field(default=datetime.utcnow())
+    date_last_update: datetime = Field(default=datetime.utcnow())
 
-    def update_data(self, data: json):
+    def update_data(self, data: str):
         self.data = data
         self.date_last_update = datetime.utcnow()
 
@@ -56,25 +76,33 @@ class Video(SQLModel, table=True):
     id: Optional[int] = Field(primary_key=True, default=None)
     course_id: int = Field(foreign_key='course.id')
     title: str = Field(default='Video tutorial')
+    topic: str = Field(default='topic')
     file_path: str
     size: int
     content_type: str
-    date_create: datetime = Field(default_factory=datetime.utcnow)
-    date_last_update: datetime = Field(default_factory=datetime.utcnow)
+    date_create: datetime = Field(default=datetime.utcnow())
+    date_last_update: datetime = Field(default=datetime.utcnow())
 
     def update_title(self, title: str):
         self.title = title
         self.date_last_update = datetime.utcnow()
 
 
+class TestData(BaseModel):
+    exercise: str
+    true_answer: str
+
+
 class Test(SQLModel, table=True):
     id: Optional[int] = Field(primary_key=True, default=None)
     courses_id: int = Field(foreign_key='course.id')
-    data: json  # {"exercise": "задание", "true_answer": "правельный ответ"}
-    date_create: datetime = Field(default_factory=datetime.utcnow)
-    date_last_update: datetime = Field(default_factory=datetime.utcnow)
+    title: str
+    topic: str = Field(default='topic')
+    data: List[TestData] = Field(sa_column=Column(JSON))
+    date_create: datetime = Field(default=datetime.utcnow())
+    date_last_update: datetime = Field(default=datetime.utcnow())
 
-    def update_data(self, data: json):
+    def update_data(self, data: TestData):
         self.data = data
         self.date_last_update = datetime.utcnow()
 
@@ -84,8 +112,8 @@ class Message(SQLModel, table=True):
     sender_user_id: int = Field(foreign_key='user.id')
     recipient_user_id: int = Field(foreign_key='user.id')
     enc_message: bytes
-    date_create: datetime = Field(default_factory=datetime.utcnow)
-    date_last_update: datetime = Field(default_factory=datetime.utcnow)
+    date_create: datetime = Field(default=datetime.utcnow())
+    date_last_update: datetime = Field(default=datetime.utcnow())
     changed: bool = Field(default=False)
 
     def Update_data(self, message: str):

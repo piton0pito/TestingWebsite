@@ -1,9 +1,11 @@
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 
 from pydantic import BaseModel, EmailStr
 from sqlmodel import Field
 from pydantic_extra_types.phone_numbers import PhoneNumber
+
+from app.models import TestData, CompletedCourses
 
 
 class UserCreate(BaseModel):
@@ -30,97 +32,53 @@ class CreateNewPassword(BaseModel):
 class GetUser(BaseModel):
     email: EmailStr = Field(default='Email')  # почта
     name: str = Field(default='Имя')  # имя
+    completed_courses: Optional[List[CompletedCourses]]
 
 
-class AddCourse(BaseModel):
+class AddUpdateCourse(BaseModel):
     title: str
-    data: Dict[str, Any] = Field(default={"data": "сами материалы"})
+    topic: str
+    data: str
 
 
 class GetCourse(BaseModel):
-    title: str
-
-
-class UpdateCourse(BaseModel):
-    title: str
-    data: Dict[str, Any] = Field(default={"data": "сами материалы обвленные"})
-
-
-class Email(BaseModel):
-    email: str
-
-
-omplete_password: str = Field(default='Confirm the password')
-
-
-class UserUpdate(BaseModel):
-    email: EmailStr = Field(default='Email')
-    password: str = Field(default='Password')
-    complete_password: str = Field(default='Confirm the password')
-
-
-class CreateNewPassword(BaseModel):
-    email: EmailStr = Field(default='Email')
-    code: str = Field(default='Verify code')
-    password: str = Field(default='Password')
-    complete_password: str = Field(default='Confirm the password')
-
-
-class GetUser(BaseModel):
-    email: EmailStr = Field(default='Email')  # почта
-    name: str = Field(default='Имя')  # имя
-
-
-class AddApartment(BaseModel):
-    city: str = Field(default='None', description='city')
-    address: str = Field(default='None', description='address')
-    type: str = Field(default='None', description='type')
-    m: int = Field(default='None', description='m')
-    prise: int = Field(default='None', description='prise')
-    description: str = Field(default='None', description='description')
-
-
-class GetApartment(BaseModel):
-    city: str = Field(default='None', description='city')
-    type: str = Field(default='None', description='type')
-    from_m: int = Field(default=-1, description='from_m')
-    before_m: int = Field(default=-1, description='before_m')
-    from_prise: int = Field(default=-1, description='from_prise')
-    before_prise: int = Field(default=-1, description='before_prise')
+    title: str = Field(default=None)
+    topic: str = Field(default=None)
     offset: int = Field(default=0, description='offset')
     limit: int = Field(default=10, description='limit')
 
 
-class UpdateDescriptionApartment(BaseModel):
-    apartments_id: int
-    description: str
+class AddUpdateTest(BaseModel):
+    title: str
+    topic: str
+    data: TestData
 
 
-class Email(BaseModel):
-    email: str
+class GetTestByName(BaseModel):
+    title: str = Field(default=None)
+    topic: str = Field(default=None)
+    offset: int = Field(default=0, description='offset')
+    limit: int = Field(default=10, description='limit')
 
 
-class CreateReview(BaseModel):
-    apartment_id: int
-    stars: int
-    description: str = Field(default='description')
-    anonim: bool = Field(default=False)
+class GetTestByCourse(BaseModel):
+    course_id: int
+    offset: int = Field(default=0, description='offset')
+    limit: int = Field(default=10, description='limit')
 
 
-class UpdateReview(BaseModel):
-    review_id: int
-    description: str = Field(default='description')
+class AnswerTest(BaseModel):
+    answer: str
 
 
-class CreateMessage(BaseModel):
+class CreateUpdateMessage(BaseModel):
     recipient_user_id: int
     message: str = Field(default='message')
 
 
-class UpdateMessage(BaseModel):
-    message_id: int
-    message: str = Field(default='message')
 
 
-class UploadAvatar(BaseModel):
-    photo: bytes
+
+
+class Email(BaseModel):
+    email: str

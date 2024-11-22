@@ -173,15 +173,20 @@ def del_course(course_id: int, su_user: User = Depends(verify_access_token), ses
     raise HTTPException(status_code=204)
 
 
-@router.post('/add_test/')
-def add_test(data: AddTest, su_user: User = Depends(verify_access_token),
+@router.post('/add_test/{courses_id}')
+def add_test(courses_id: int, data: AddTest, su_user: User = Depends(verify_access_token),
              session: Session = Depends(get_session)):
     if su_user.role != 'super_user':
         raise HTTPException(status_code=403)
+
+    # Преобразуем список TestData в список словарей
+    test_data = [test_data.dict() for test_data in data.data]
+
     test = Test(
+        courses_id=courses_id,
         title=data.title,
         topic=data.topic,
-        data=data.data
+        data=test_data
     )
     session.add(test)
     session.commit()

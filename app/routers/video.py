@@ -1,6 +1,9 @@
+import os
+
+import aiofiles
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from starlette.responses import HTMLResponse
+from starlette.responses import HTMLResponse, StreamingResponse
 
 from app.db import get_session
 from app.models import Video, User
@@ -52,9 +55,9 @@ def get_video_tutorials_course_id(data: GetVideoByCourse, session: Session = Dep
     ) for video in videos]
 
 
-@router.get('/get_video_tutorial/{video_id}/', response_class=HTMLResponse)
-def get_video_tutorial_id(video_id: int, user: User = Depends(verify_access_token),
-                          session: Session = Depends(get_session)):
+@router.get('/get_video_tutorial/{video_id}/', response_class=StreamingResponse)
+async def get_video_tutorial_id(video_id: int, user: User = Depends(verify_access_token),
+                                session: Session = Depends(get_session)):
     if user.role == 'BAN':
         raise HTTPException(status_code=403)
 
@@ -64,20 +67,17 @@ def get_video_tutorial_id(video_id: int, user: User = Depends(verify_access_toke
 
     path = video.file_path  # Путь к видео
 
-    return f"""
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Video Player</title>
-            </head>
-            <body>
-                <h1>Video Player</h1>
-                <video id="videoPlayer" width="640" height="480" controls autoplay muted>
-                    <source src="{path}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </body>
-            </html>
-        """
+    # Проверяем, существует ли файл
+    if not os.path.exists(path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    # Асинхронный генератор для потоковой передачи файла
+    async def iterfile():
+        async with aiofiles.open(path, mode='rb') as file_like:
+            while True:
+                chunk = await file_like.read(1024)  # Читаем 1024 байта за раз
+                if not chunk:
+                    break
+                yield chunk
+
+    return StreamingResponse(iterfile(), media_type="video/mp4")  # Замените media_type на нужный тип, если необходимо

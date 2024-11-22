@@ -73,7 +73,16 @@ class CourseResponse(BaseModel):
 class AddTest(BaseModel):
     title: str
     topic: str
-    data: TestData
+    data: List[TestData]
+
+
+class ReadTest(BaseModel):
+    id: Optional[int]
+    courses_id: int
+    title: str
+    topic: str
+    date_create: datetime
+    date_last_update: datetime
 
 
 class AddUpdateTest(BaseModel):
@@ -88,7 +97,6 @@ class GetTestByName(BaseModel):
 
 
 class GetTestByCourse(BaseModel):
-    course_id: int
     offset: int = Field(default=0, description='offset')
     limit: int = Field(default=10, description='limit')
 

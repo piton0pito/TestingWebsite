@@ -1,22 +1,24 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db import get_session
 from app.models import Test, User
-from app.schemas import GetTestByName, GetTestByCourse, AnswerTest
+from app.schemas import GetTestByName, GetTestByCourse, AnswerTest, ReadTest
 from app.utils import verify_access_token
 
-router = APIRouter(tags=['user'],
+router = APIRouter(tags=['test'],
                    responses={404: {"description": "Not found"}})
 
 
-@router.post('/get_tests/title_topic')
+@router.post('/get_tests/title_topic', response_model=List[ReadTest])
 def get_courses(data: GetTestByName, session: Session = Depends(get_session)):
     query = select(Test)
 
-    if data.title != 'None':
+    if not data.title:
         query = query.where(Test.title == data.title)
-    if data.topic != 'None':
+    if not data.topic:
         query = query.where(Test.topic == data.topic)
 
     offset = data.offset
@@ -27,9 +29,9 @@ def get_courses(data: GetTestByName, session: Session = Depends(get_session)):
     return tests
 
 
-@router.post('/get_tests/course_id')
-def get_courses(data: GetTestByCourse, session: Session = Depends(get_session)):
-    query = select(Test).where(Test.courses_id == data.course_id)
+@router.post('/get_tests/{course_id}', response_model=List[ReadTest])
+def get_courses(course_id: int, data: GetTestByCourse, session: Session = Depends(get_session)):
+    query = select(Test).where(Test.courses_id == course_id)
 
     offset = data.offset
     limit = data.limit

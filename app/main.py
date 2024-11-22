@@ -6,7 +6,7 @@ from sqlmodel import SQLModel
 from starlette.responses import FileResponse
 
 from app.db import engine
-from app.routers import user, course
+from app.routers import user, course, test, video
 from app.utils import send_mail, get_meme
 
 if __name__ == '__main__':
@@ -15,8 +15,8 @@ if __name__ == '__main__':
 app = FastAPI()
 app.include_router(user.router)
 app.include_router(course.router)
-# app.include_router(reviews.router)
-# app.include_router(message.router)
+app.include_router(test.router)
+app.include_router(video.router)
 # app.include_router(admin.router)
 
 
@@ -34,7 +34,7 @@ def schedule_mail(email: str, code: str, tasks: BackgroundTasks):
 @app.get("/random_meme")
 async def get_image():
     await get_meme()
-    image_path = Path("../test/meme.jpg")  # Replace with the actual image path
+    image_path = Path("../app/meme.jpg")  # Replace with the actual image path
     return FileResponse(image_path, media_type="image/jpeg")
 
 

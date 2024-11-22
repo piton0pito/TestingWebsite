@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import Dict, Any, Optional, List
 
 from pydantic import BaseModel, EmailStr
@@ -69,6 +70,29 @@ class GetTestByCourse(BaseModel):
 
 class AnswerTest(BaseModel):
     answer: str
+
+
+class GetVideoByName(BaseModel):
+    title: str = Field(default=None)
+    topic: str = Field(default=None)
+    offset: int = Field(default=0, description='offset')
+    limit: int = Field(default=10, description='limit')
+
+
+class GetVideoByCourse(BaseModel):
+    course_id: int
+    offset: int = Field(default=0, description='offset')
+    limit: int = Field(default=10, description='limit')
+
+
+class ReturnVideoSearch(BaseModel):
+    course_id: int
+    title: str
+    topic: str
+    date_create: datetime
+    date_last_update: datetime
+
+
 
 
 class CreateUpdateMessage(BaseModel):

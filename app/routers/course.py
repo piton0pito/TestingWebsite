@@ -1,16 +1,18 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db import get_session
 from app.models import Course, User, CompletedCourses, FavouritesCourse
-from app.schemas import GetCourse
+from app.schemas import GetCourse, CourseResponse
 from app.utils import verify_access_token
 
 router = APIRouter(tags=['course'],
                    responses={404: {"description": "Not found"}})
 
 
-@router.post('/get_courses/')
+@router.post('/get_courses/', response_model=List[CourseResponse])
 def get_courses(data: GetCourse, session: Session = Depends(get_session)):
     query = select(Course)
 

@@ -36,28 +36,53 @@ class GetUser(BaseModel):
     completed_courses: Optional[List[CompletedCourses]]
 
 
-class AddUpdateCourse(BaseModel):
+class GetUserForAdmin(BaseModel):
+    id: Optional[int]
+    role: Optional[str]
+    email: Optional[str]
+    phone: Optional[str]
+    name: Optional[str]
+    date_reg: datetime
+
+
+class AddCourse(BaseModel):
     title: str
     topic: str
     data: str
 
 
+class AddUpdateCourse(BaseModel):
+    data: str
+
+
 class GetCourse(BaseModel):
-    title: str = Field(default=None)
-    topic: str = Field(default=None)
+    title: Optional[str] = Field(default=None)
+    topic: Optional[str] = Field(default=None)
     offset: int = Field(default=0, description='offset')
     limit: int = Field(default=10, description='limit')
 
 
-class AddUpdateTest(BaseModel):
+class CourseResponse(BaseModel):
+    id: Optional[int]
+    title: str
+    topic: str
+    date_create: datetime
+    date_last_update: datetime
+
+
+class AddTest(BaseModel):
     title: str
     topic: str
     data: TestData
 
 
+class AddUpdateTest(BaseModel):
+    data: TestData
+
+
 class GetTestByName(BaseModel):
-    title: str = Field(default=None)
-    topic: str = Field(default=None)
+    title: Optional[str] = Field(default=None)
+    topic: Optional[str] = Field(default=None)
     offset: int = Field(default=0, description='offset')
     limit: int = Field(default=10, description='limit')
 
@@ -72,9 +97,19 @@ class AnswerTest(BaseModel):
     answer: str
 
 
+class AddVideo(BaseModel):
+    course_id: int
+    title: Optional[str] = Field(default='Video tutorial', max_length=255)
+    topic: Optional[str] = Field(default='topic', max_length=255)
+
+
+class UpdateVideo(BaseModel):
+    title: Optional[str] = Field(default='Video tutorial', max_length=255)
+
+
 class GetVideoByName(BaseModel):
-    title: str = Field(default=None)
-    topic: str = Field(default=None)
+    title: Optional[str] = Field(default=None)
+    topic: Optional[str] = Field(default=None)
     offset: int = Field(default=0, description='offset')
     limit: int = Field(default=10, description='limit')
 

@@ -78,7 +78,6 @@ class Video(SQLModel, table=True):
     title: str = Field(default='Video tutorial')
     topic: str = Field(default='topic')
     file_path: str
-    size: int
     content_type: str
     date_create: datetime = Field(default=datetime.utcnow())
     date_last_update: datetime = Field(default=datetime.utcnow())

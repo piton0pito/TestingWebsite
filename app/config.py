@@ -11,6 +11,7 @@ PORT = os.environ.get("MAIL_PORT", 465)
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = os.environ.get("ALGORITHM")
+VIDEO_UPLOAD_PATH = os.environ.get("VIDEO_UPLOAD_PATH")
 
 PASS_ADMIN = os.environ.get("PASS_ADMIN")
 EMAIL_ADMIN = os.environ.get("EMAIL_ADMIN")

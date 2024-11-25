@@ -122,7 +122,8 @@ def create_new_password(data: CreateNewPassword, session: Session = Depends(get_
 
 @router.get('/me/')
 def user_me(temp_user: User = Depends(verify_access_token), session: Session = Depends(get_session)):
-
+    if not session.exec(select(User).where(User.id == temp_user.id)).first():
+        raise HTTPException(status_code=404)
     user = GetUser(email=temp_user.email, name=temp_user.name, completed_courses=temp_user.completed_courses)
     return user
 

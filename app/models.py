@@ -13,7 +13,7 @@ from config import SECRET_KEY
 class User(SQLModel, table=True):
     id: Optional[int] = Field(primary_key=True, default=None)
     hash_password: str  # хэш пароля
-    role: str = Field(default='user')  # роль пользователя super_user, user, BAN
+    role: str = Field(default='user')  # роль пользователя super_user, teacher, user, BAN
     email: str  # почта
     phone: str
     name: str  # имя
@@ -31,6 +31,9 @@ class User(SQLModel, table=True):
 
     def user_user(self):
         self.role = 'user'
+
+    def teacher_user(self):
+        self.role = 'teacher'
 
 
 class CompletedCourses(SQLModel, table=True):
@@ -104,6 +107,22 @@ class Test(SQLModel, table=True):
     def update_data(self, data: TestData):
         self.data = data
         self.date_last_update = datetime.utcnow()
+
+
+class LabData(SQLModel, table=True):
+    id: Optional[int] = Field(primary_key=True, default=None)
+    course_id: int = Field(foreign_key='course.id')
+    title: str = Field(default='Video tutorial')
+    topic: str = Field(default='topic')
+    date_create: datetime = Field(default=datetime.utcnow())
+
+
+class LabWork(SQLModel, table=True):
+    id: Optional[int] = Field(primary_key=True, default=None)
+    lab_data_id: int = Field(foreign_key='laWobdata.id')
+    file_path: str
+    content_type: str
+    date_create: datetime = Field(default=datetime.utcnow())
 
 
 class Message(SQLModel, table=True):

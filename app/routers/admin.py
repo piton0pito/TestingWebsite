@@ -285,6 +285,7 @@ async def update_video_title(
     session.refresh(video)
     raise HTTPException(status_code=200)
 
+
 @router.delete('/delete_video/{video_id}')
 def del_video(
         video_id: int,

@@ -76,11 +76,21 @@ class AddTest(BaseModel):
     data: List[TestData]
 
 
-class ReadTest(BaseModel):
+class ReadTestSearch(BaseModel):
     id: Optional[int]
     courses_id: int
     title: str
     topic: str
+    date_create: datetime
+    date_last_update: datetime
+
+
+class ReadTestResponse(BaseModel):
+    id: Optional[int]
+    courses_id: int
+    title: str
+    topic: str
+    exercise: str
     date_create: datetime
     date_last_update: datetime
 
@@ -136,6 +146,19 @@ class ReturnVideoSearch(BaseModel):
     date_last_update: datetime
 
 
+class MessageCreate(BaseModel):
+    sender_user_id: int
+    recipient_user_id: int
+    message: str
+
+
+class MessageResponse(BaseModel):
+    id: int
+    sender_user_id: int
+    recipient_user_id: int
+    message: str
+    date_create: datetime
+    date_last_update: datetime
 
 
 class CreateUpdateMessage(BaseModel):

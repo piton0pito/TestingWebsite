@@ -6,7 +6,7 @@ from sqlmodel import SQLModel
 from starlette.responses import FileResponse
 
 from app.db import engine
-from app.routers import user, course, test, video, admin
+from app.routers import user, course, test, video, admin, message
 from app.utils import send_mail, get_meme
 
 if __name__ == '__main__':
@@ -18,6 +18,7 @@ app.include_router(course.router)
 app.include_router(test.router)
 app.include_router(video.router)
 app.include_router(admin.router)
+app.include_router(message.router)
 
 
 @app.get('/mem/')
